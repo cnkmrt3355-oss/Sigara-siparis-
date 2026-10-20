@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sigara Sipariş</title>
+<style>
+:root{--bg:#f6f5f1;--card:#fff;--tx:#1d1d1b;--mut:#77756e;--br:#e2e0d8;--ac:#1d6b4f;--acx:#fff;--bad:#b3261e;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#161614;--card:#222220;--tx:#f0efe9;--mut:#9b9990;--br:#34332f;--ac:#4cc29a;--acx:#10231c;--bad:#f2b8b5}}
+:root[data-theme="dark"]{--bg:#161614;--card:#222220;--tx:#f0efe9;--mut:#9b9990;--br:#34332f;--ac:#4cc29a;--acx:#10231c;--bad:#f2b8b5}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+body{max-width:640px;margin:0 auto;padding-bottom:90px}
+header{position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);padding:12px 14px 8px;z-index:5;border-bottom:1px solid var(--br)}
+h1{font-size:19px;margin:0 0 8px;display:flex;justify-content:space-between;align-items:center}
+#st{font-size:12px;font-weight:400;color:var(--mut)}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}
+.tab{flex:0 0 auto;border:1px solid var(--br);background:var(--card);color:var(--tx);padding:8px 13px;border-radius:20px;font-size:14px}
+.tab.on{background:var(--ac);color:var(--acx);border-color:var(--ac)}
+.tab b{font-weight:600;margin-left:4px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--card);border:1px solid var(--br);border-radius:12px;margin:8px 14px;padding:10px 12px}
+.row.sel{border-color:var(--ac)}
+.nm{font-size:15px;line-height:1.25}.nm small{display:block;color:var(--mut);font-size:12px;margin-top:2px}
+.ctl{display:flex;align-items:center;gap:6px;flex:0 0 auto}
+.ctl button{width:38px;height:38px;border-radius:50%;border:1px solid var(--br);background:var(--bg);color:var(--tx);font-size:20px}
+.ctl button.p{background:var(--ac);color:var(--acx);border-color:var(--ac)}
+.ctl span{min-width:26px;text-align:center;font-weight:600;font-size:16px}
+.sec{margin:14px 14px 4px;font-size:13px;color:var(--mut);font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.btn{display:block;width:calc(100% - 28px);margin:10px 14px;padding:13px;border-radius:12px;border:1px solid var(--ac);background:var(--ac);color:var(--acx);font-size:16px}
+.btn.sec2{background:var(--card);color:var(--bad);border-color:var(--br)}
+.empty{text-align:center;color:var(--mut);margin:40px 20px}
+textarea{width:calc(100% - 28px);margin:6px 14px;height:150px;border-radius:10px;border:1px solid var(--br);background:var(--card);color:var(--tx);padding:10px;font-size:14px}
+input[type=search]{width:calc(100% - 28px);margin:10px 14px 0;padding:11px;border-radius:10px;border:1px solid var(--br);background:var(--card);color:var(--tx);font-size:15px}
+#lg{position:fixed;inset:0;background:var(--bg);z-index:20;display:none;align-items:center;justify-content:center;padding:20px}
+#lg form{width:100%;max-width:360px}
+#lg h2{margin:0 0 14px;font-size:22px}
+#lg input{width:100%;margin:0 0 10px;padding:13px;border-radius:10px;border:1px solid var(--br);background:var(--card);color:var(--tx);font-size:16px}
+#lg button{width:100%;padding:13px;border-radius:12px;border:0;background:var(--ac);color:var(--acx);font-size:16px;font-weight:600}
+#lg button.lnk{background:none;color:var(--ac);font-weight:400;font-size:14px;margin-top:8px;padding:10px}
+#er{color:var(--bad);font-size:14px;margin-top:10px;min-height:18px}
+#out{border:0;background:none;color:var(--mut);font-size:12px;padding:0 0 0 8px;display:none}
+footer{position:fixed;left:0;right:0;bottom:0;padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px));background:var(--bg);border-top:1px solid var(--br);max-width:640px;margin:0 auto}
+footer button{width:100%;padding:13px;border-radius:12px;border:0;background:var(--ac);color:var(--acx);font-size:16px;font-weight:600}
+</style>
+</head>
+<body>
+<header>
+<h1>🚬 Sigara Sipariş <span><span id="st"></span><button id="out">Çıkış</button></span></h1>
+<div class="tabs" id="tabs"></div>
+</header>
+<input type="search" id="q" placeholder="Ara… (ör. kent, camel)">
+<main id="main"></main>
+<div id="lg"><form id="lf"><h2 id="lt">🚬 Sigara Sipariş</h2>
+<input type="email" id="em" placeholder="E-posta" autocomplete="username" required>
+<input type="password" id="pw" placeholder="Şifre" autocomplete="current-password" required>
+<input type="password" id="pw2" placeholder="Şifre (tekrar)" autocomplete="new-password" style="display:none">
+<button type="submit" id="sb">Giriş yap</button>
+<button type="button" id="tg" class="lnk">Hesabın yok mu? Hesap oluştur</button><div id="er"></div></form></div>
+<footer><button id="go"></button></footer>
+<script>
+// Firebase Console > Proje ayarları > Web uygulaması bölümündeki ayarları buraya yapıştır
+var FIREBASE_CONFIG={
+ apiKey:"AIzaSyASXUnrnm1-2RLkDtfAt9EZTDccpkCaryE",
+ authDomain:"sigara-siparis.firebaseapp.com",
+ databaseURL:"https://sigara-siparis-default-rtdb.europe-west1.firebasedatabase.app",
+ projectId:"sigara-siparis",
+ appId:"1:702074559366:web:fdb9ba9b57660c812d2a07"
+};
+var BR=[
+["JTI","j",[["Winston Slender Q Line",120],["Winston Slender & Slender Long",120],["Winston Dark Blue & Deep Blue",120],["Winston",125],["Winston Slims Q Line",130],["Winston Slims",130],["Winston Xsence",130],["Camel Slims Q Line",115],["Camel Slender",115],["Camel Deep Blue",115],["Camel Black & White",120],["Camel Yellow & Brown",120],["LD",115],["LD Slims",115],["Monte Carlo",115],["Camel Yellow 100 gr (sarmalık)",285]]],
+["Philip Morris","p",[["Parliament Midnight",140],["Parliament Night Blue Pack / Long",130],["Parliament Aqua Blue Slims",130],["Parliament Night Blue / Aqua Blue / Reserve",130],["Parliament Midnight Blue",125],["Marlboro Red Long / Red / Touch",125],["Marlboro Touch Blue / Gray / White",125],["Marlboro Edge",123],["Marlboro Edge Slims",120],["Marlboro Edge Blue",120],["Muratti",122],["Muratti Blu",122],["Lark",120],["Chesterfield",120],["L&M",120],["Marlboro Roll 50 (sarmalık)",160]]],
+["BAT","b",[["Kent Switch, Switch Dark Blue",115],["Kent D Range (Blue, Grey, Black, Long)",120],["Kent Dark Blue, Dark Blue Long",120],["Kent Slims Long (Blue, Grey)",125],["Kent Slims (Black, Grey)",130],["Kent (Blue, White)",130],["Rothmans (tüm ürünler)",115],["Tekel 2000 (tüm ürünler)",115],["Tekel 2001 (tüm ürünler)",120],["Viceroy (tüm ürünler)",120],["Pall Mall (tüm ürünler)",120],["Maltepe & Samsun",120]]]
+];
+var ITEMS=[];BR.forEach(function(b){b[2].forEach(function(it,i){ITEMS.push({id:b[1]+i,br:b[0],bk:b[1],n:it[0],p:it[1]})})});
+var Q={},tab="j",ref=null,timer=null,saveOK=false;
+var $=function(i){return document.getElementById(i)};
+function tot(){var c=0,t=0;ITEMS.forEach(function(x){var n=Q[x.id]||0;c+=n;t+=n*x.p});return[c,t]}
+function setQ(id,d){var n=Math.max(0,(Q[id]||0)+d);if(n)Q[id]=n;else delete Q[id];render();save()}
+function save(){if(!ref){try{localStorage.setItem('sg_q',JSON.stringify(Q))}catch(e){}return}clearTimeout(timer);timer=setTimeout(function(){ref.set({q:Q,t:Date.now()}).then(function(){$("st").textContent="✓ kaydedildi"}).catch(function(){$("st").textContent="kaydedilemedi"})},350)}
+function row(x){var n=Q[x.id]||0;return '<div class="row'+(n?' sel':'')+'"><div class="nm">'+esc(x.n)+'<small>'+x.p+' ₺</small></div><div class="ctl">'+(n?'<button data-i="'+x.id+'" data-d="-1">−</button><span>'+n+'</span>':'')+'<button class="p" data-i="'+x.id+'" data-d="1">+</button></div></div>'}
+function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;")}
+function text(){var o=[],last="";ITEMS.forEach(function(x){var n=Q[x.id]||0;if(!n)return;if(x.br!==last){o.push((o.length?"\n":"")+x.br+":");last=x.br}o.push("- "+x.n+": "+n+" paket")});return o.join("\n")}
+function render(){
+ var c=tot();var qv=$("q").value.trim().toLocaleLowerCase("tr");
+ var h='';BR.forEach(function(b){var k=0;ITEMS.forEach(function(x){if(x.bk===b[1])k+=Q[x.id]||0});h+='<button class="tab'+(tab===b[1]?' on':'')+'" data-t="'+b[1]+'">'+b[0]+(k?'<b>'+k+'</b>':'')+'</button>'});
+ h+='<button class="tab'+(tab==="s"?' on':'')+'" data-t="s">Liste<b>'+c[0]+'</b></button>';
+ $("tabs").innerHTML=h;
+ $("q").style.display=tab==="s"?"none":"";
+ var m='';
+ if(tab==="s"){
+  if(!c[0])m='<div class="empty">Henüz seçim yok.</div>';
+  else{var last="";ITEMS.forEach(function(x){if(!Q[x.id])return;if(x.br!==last){m+='<div class="sec">'+x.br+'</div>';last=x.br}m+=row(x)});
+   m+='<div class="sec">Sigaracıya gönderilecek metin</div><textarea id="ta" readonly>'+esc(text())+'</textarea><button class="btn" id="cp">Metni kopyala</button><button class="btn sec2" id="cl">Sipariş verildi, listeyi temizle</button>'}
+ }else{
+  var any=false;ITEMS.forEach(function(x){if(qv?x.n.toLocaleLowerCase("tr").indexOf(qv)<0:x.bk!==tab)return;any=true;m+=row(x)});
+  if(!any)m='<div class="empty">Bulunamadı.</div>';
+ }
+ $("main").innerHTML=m;
+ $("go").textContent=c[0]?(c[0]+" paket · "+c[1].toLocaleString("tr-TR")+" ₺ — Listeyi gör"):"Henüz seçim yok";
+}
+document.addEventListener("click",function(e){
+ var t=e.target.closest("[data-t]");if(t){tab=t.dataset.t;render();window.scrollTo(0,0);return}
+ var b=e.target.closest("[data-i]");if(b){setQ(b.dataset.i,+b.dataset.d);return}
+ if(e.target.id==="go"){tab="s";render();window.scrollTo(0,0)}
+ if(e.target.id==="cp"){var ta=$("ta");ta.select();var ok=false;try{ok=document.execCommand("copy")}catch(x){}
+  if(!ok&&navigator.clipboard)navigator.clipboard.writeText(ta.value).then(function(){e.target.textContent="Kopyalandı ✓"}).catch(function(){});
+  else e.target.textContent=ok?"Kopyalandı ✓":"Metni basılı tutup kopyala"}
+ if(e.target.id==="cl"&&confirm("Liste temizlensin mi?")){Q={};render();save()}
+});
+$("q").addEventListener("input",render);
+function start(){
+ var unsub=null;
+ function showLogin(v){$("lg").style.display=v?"flex":"none";$("out").style.display=v?"none":"inline"}
+ try{
+  firebase.initializeApp(FIREBASE_CONFIG);
+  var auth=firebase.auth();
+  var reg=false;
+  function mode(r){reg=r;$("lt").textContent=r?"Hesap oluştur":"🚬 Sigara Sipariş";$("sb").textContent=r?"Hesap oluştur":"Giriş yap";
+   $("tg").textContent=r?"Zaten hesabın var mı? Giriş yap":"Hesabın yok mu? Hesap oluştur";
+   $("pw2").style.display=r?"block":"none";$("pw2").required=r;$("pw2").value="";
+   $("pw").autocomplete=r?"new-password":"current-password";$("er").textContent=""}
+  function msg(c){return({"auth/email-already-in-use":"Bu e-posta ile zaten hesap var, giriş yapmayı dene","auth/invalid-email":"Geçersiz e-posta adresi","auth/weak-password":"Şifre en az 6 karakter olmalı","auth/operation-not-allowed":"Firebase'de E-posta/Şifre girişi açık değil","auth/network-request-failed":"İnternet bağlantısı yok","auth/too-many-requests":"Çok fazla deneme, biraz bekle","auth/user-not-found":"E-posta veya şifre hatalı","auth/wrong-password":"E-posta veya şifre hatalı","auth/invalid-credential":"E-posta veya şifre hatalı"})[c]||"İşlem başarısız ("+c+")"}
+  $("tg").addEventListener("click",function(){mode(!reg)});
+  $("lf").addEventListener("submit",function(e){e.preventDefault();$("er").textContent="";
+   var em=$("em").value.trim(),pw=$("pw").value;
+   if(reg){
+    if(pw.length<6){$("er").textContent=msg("auth/weak-password");return}
+    if(pw!==$("pw2").value){$("er").textContent="Şifreler aynı değil";return}
+    $("sb").disabled=true;
+    auth.createUserWithEmailAndPassword(em,pw).catch(function(x){$("er").textContent=msg(x.code)}).then(function(){$("sb").disabled=false});
+   }else{
+    $("sb").disabled=true;
+    auth.signInWithEmailAndPassword(em,pw).catch(function(x){$("er").textContent=msg(x.code)}).then(function(){$("sb").disabled=false});
+   }});
+  $("out").addEventListener("click",function(){auth.signOut()});
+  auth.onAuthStateChanged(function(u){
+   if(unsub){unsub();unsub=null}
+   if(!u){ref=null;Q={};showLogin(true);render();return}
+   showLogin(false);
+   ref=firebase.database().ref("siparis/liste");
+   var cb=ref.on("value",function(snap){var d=snap.val();Q=(d&&d.q)||{};$("st").textContent="canlı ●";render()},function(){$("st").textContent="bağlantı hatası"});
+   var r0=ref;unsub=function(){r0.off("value",cb)};
+  });
+ }catch(e){$("st").textContent="Firebase hatası: "+(e&&e.message||e);showLogin(false);console.error(e)}
+}
+(function(){
+ var F=[["app","initializeApp"],["database","database"],["auth","auth"]];
+ function ld(src,ok,bad){var s=document.createElement("script");s.src=src;s.onload=ok;s.onerror=bad;document.head.appendChild(s)}
+ function all(base,done,fail){var i=0;(function n(){
+  if(i>=F.length)return done();var f=F[i++];
+  if(window.firebase&&firebase[f[1]])return n();
+  ld(base(f[0]),n,fail)})()}
+ var g=function(n){return"https://www.gstatic.com/firebasejs/10.12.2/firebase-"+n+"-compat.js"};
+ var j=function(n){return"https://cdn.jsdelivr.net/npm/firebase@10.12.2/firebase-"+n+"-compat.js"};
+ $("st").textContent="yükleniyor…";
+ all(g,start,function(){all(j,start,function(){$("st").textContent="Firebase yüklenemedi (internet/engelleyici?)";$("lg").style.display="none"})});
+})();
+</script>
+</body>
+</html>
