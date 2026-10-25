@@ -143,6 +143,11 @@ main.home #res{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:to
 #gf input[type=text],#gf input:not([type]){width:100%;margin:0 0 10px;padding:12px;border-radius:10px;border:1px solid var(--br);background:var(--bg);color:var(--tx);font-size:16px}
 #gf label{display:block;font-size:12px;color:var(--mut);margin:0 0 4px}
 .gdel{width:100%;margin-top:10px;padding:11px;border-radius:12px;border:1px solid var(--br);background:var(--bg);color:var(--bad);font-size:14px}
+#cm{position:fixed;inset:0;background:#000;z-index:40;display:none;flex-direction:column}
+#cv{flex:1;min-height:0;width:100%;object-fit:contain;background:#000}
+.cbar{flex:none;display:flex;align-items:center;justify-content:space-around;padding:14px 10px calc(14px + env(safe-area-inset-bottom,0px));background:#000}
+.cbar button{border:0;background:none;color:#fff;font-size:16px;padding:12px 14px;min-width:72px}
+.cbar button.shot{width:72px;height:72px;min-width:72px;border-radius:50%;border:5px solid #fff;background:#e5322d;padding:0}
 </style>
 </head>
 <body>
@@ -159,6 +164,7 @@ main.home #res{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:to
 <input type="file" id="pfc" accept="image/*" capture="environment" style="display:none">
 <input type="file" id="pf" accept="image/*" style="display:none">
 <div class="mb"><button type="button" id="mc">İptal</button><button type="submit" class="ok">Kaydet</button></div></form></div>
+<div id="cm"><video id="cv" autoplay playsinline muted></video><div class="cbar"><button type="button" id="cx">İptal</button><button type="button" id="cs" class="shot" aria-label="Fotoğraf çek"></button><button type="button" id="cf">🔄 Çevir</button></div></div>
 <div id="gd"><form id="gf"><h3 id="gt"></h3>
 <label for="gn">Grup adı</label><input id="gn" maxlength="40" autocomplete="off" required>
 <label>Logo (isteğe bağlı)</label><div class="pv" id="gpv">Logo yok</div>
@@ -182,6 +188,7 @@ var FIREBASE_CONFIG={
  projectId:"sigara-siparis",
  appId:"1:702074559366:web:fdb9ba9b57660c812d2a07"
 };
+var APPV="v6";
 var BR=[
 ["JTI","j",[["Winston Slender Q Line",120,"j0"],["Winston Slender",120,"j1"],["Winston Slender Long",120,"j16"],["Winston Dark Blue",120,"j2"],["Winston Deep Blue",120,"j17"],["Winston",125,"j3"],["Winston Slims Q Line",130,"j4"],["Winston Slims",130,"j5"],["Winston Xsence",130,"j6"],["Camel Slims Q Line",115,"j7"],["Camel Slender",115,"j8"],["Camel Deep Blue",115,"j9"],["Camel Black",120,"j10"],["Camel White",120,"j18"],["Camel Yellow",120,"j11"],["Camel Brown",120,"j19"],["Camel Yellow 100 gr (sarmalık)",285,"j15"],["LD",115,"j12"],["LD Slims",115,"j13"],["Monte Carlo",115,"j14"]]],
 ["Philip Morris","p",[["Parliament Midnight",140,"p0"],["Parliament Midnight Blue",125,"p4"],["Parliament Night Blue",130,"p3"],["Parliament Aqua Blue",130,"p17"],["Parliament Aqua Blue Slims",130,"p2"],["Parliament Night Blue Pack Kapalı",130,"p1"],["Parliament Night Blue Pack Kapaksız",130,"p18"],["Parliament Reserve",130,"p19"],["Marlboro Red",125,"p5"],["Marlboro Red Long",125,"p20"],["Marlboro Touch",125,"p21"],["Marlboro Touch Blue",125,"p6"],["Marlboro Touch Gray",125,"p22"],["Marlboro Touch White",125,"p23"],["Marlboro Edge",123,"p7"],["Marlboro Edge Slims",120,"p8"],["Marlboro Edge Blue",120,"p9"],["Muratti Rosso",122,"p10"],["Muratti Blue Line",122,"p11"],["Lark Uzun",120,"p12"],["Lark Kısa",120,"p24"],["L&M Uzun",120,"p14"],["L&M Kısa",120,"p25"],["Chesterfield Navy Blue Uzun",120,"p13"],["Chesterfield Navy Blue Kısa",120,"p26"],["Chesterfield Mode Navy",120,"p27"],["Marlboro Roll 50 (sarmalık)",160,"p15"]]],
@@ -273,7 +280,7 @@ function settingsView(){var th=[["auto","Otomatik"],["light","Açık"],["dark","
  return '<div class="set"><div>Tema</div><div class="seg">'+th.map(function(t){return '<button data-act="theme" data-v="'+t[0]+'" class="'+(cfg.theme===t[0]?'on':'')+'">'+t[1]+'</button>'}).join('')+'</div></div>'+
  '<div class="set"><div>Kartondaki paket sayısı<small>Fiyat ve paket hesabında kullanılır</small></div><input type="number" id="ppk" min="1" max="99" value="'+cfg.ppk+'"></div>'+
  '<div class="set"><div>Fiyatları göster</div><div class="seg"><button data-act="price" data-v="1" class="'+(cfg.price?'on':'')+'">Açık</button><button data-act="price" data-v="0" class="'+(cfg.price?'':'on')+'">Kapalı</button></div></div>'+
- '<button class="btn sec2" data-act="clear">Sepeti temizle</button><button class="btn sec2" data-act="catreset">Sigara listesini ilk haline döndür</button>'}
+ '<button class="btn sec2" data-act="clear">Sepeti temizle</button><button class="btn sec2" data-act="catreset">Sigara listesini ilk haline döndür</button><div class="hint" style="text-align:center">Uygulama sürümü: '+APPV+'</div>'}
 function userView(){var em=user&&user.email;
  return '<div class="uc"><div class="av">'+(em?esc(em[0].toUpperCase()):'?')+'</div><div class="ue">'+(em?esc(em):'Giriş yapılmadı')+'</div><div class="us">'+(em?'Sepet ve siparişler Firebase\'de saklanıyor':'Veriler sadece bu cihazda saklanıyor')+'</div></div>'+
  (em?'<button class="btn sec2" data-act="out">Çıkış yap</button>':(AUTH?'<button class="btn" data-act="login">Giriş yap</button>':''))}
@@ -373,11 +380,24 @@ function start(){
   });
  }catch(e){setStatus("Firebase hatası: "+(e&&e.message||e));showLogin(false);render();console.error(e)}
 }
+var cStream=null,cCb=null,cFace="environment";
+function camStop(){if(cStream){cStream.getTracks().forEach(function(t){t.stop()});cStream=null}$("cv").srcObject=null;$("cm").style.display="none"}
+function camStart(){return navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:cFace},width:{ideal:1280},height:{ideal:960}},audio:false}).then(function(st){cStream=st;var v=$("cv");v.srcObject=st;if(v.play)v.play().catch(function(){})})}
+function openCam(cb,fallbackId){
+ if(!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia)){$(fallbackId).click();return}
+ cCb=cb;$("cm").style.display="flex";
+ camStart().catch(function(){camStop();toast("Kamera izni verilmedi, telefonun kamera uygulaması deneniyor");$(fallbackId).click()})}
+$("cx").addEventListener("click",camStop);
+$("cf").addEventListener("click",function(){cFace=cFace==="environment"?"user":"environment";if(cStream){cStream.getTracks().forEach(function(t){t.stop()});cStream=null}camStart().catch(function(){toast("Kamera değiştirilemedi")})});
+$("cs").addEventListener("click",function(){var v=$("cv");if(!v.videoWidth)return;
+ var k=Math.min(1,420/Math.max(v.videoWidth,v.videoHeight)),w=Math.round(v.videoWidth*k),h=Math.round(v.videoHeight*k),c=document.createElement("canvas");
+ c.width=w;c.height=h;var g=c.getContext("2d");g.fillStyle="#fff";g.fillRect(0,0,w,h);g.drawImage(v,0,0,w,h);
+ var u=c.toDataURL("image/jpeg",0.78),cb=cCb;camStop();if(cb)cb(u)});
 var gId=null,gpend;
 function gShow(){var u=gpend!==undefined?gpend:(gId&&IMGS[gId]);$("gpv").innerHTML=u?'<img alt="" src="'+u+'">':'Logo yok';$("gpd").style.display=u?"":"none"}
 function openGd(id){gId=id;$("gt").textContent=id?"Grubu düzenle":"Yeni sigara grubu";$("gn").value=id?brand(id)[0]:"";$("gdl").style.display=id?"":"none";gpend=undefined;gShow();$("gd").style.display="flex";setTimeout(function(){$("gn").focus()},50)}
 $("gc").addEventListener("click",function(){$("gd").style.display="none"});
-$("gpc").addEventListener("click",function(){$("gpfc").click()});
+$("gpc").addEventListener("click",function(){openCam(function(u){gpend=u;gShow()},"gpfc")});
 $("gpg").addEventListener("click",function(){$("gpf").click()});
 $("gpd").addEventListener("click",function(){gpend=null;gShow()});
 ["gpf","gpfc"].forEach(function(id){$(id).addEventListener("change",function(){var f=this.files&&this.files[0];this.value="";if(!f)return;shrink(f,function(u){gpend=u;gShow()})})});
@@ -391,7 +411,7 @@ $("gdl").addEventListener("click",function(){if(!gId||!cat.grp[gId])return;
  Object.keys(cat.add).forEach(function(k){if(cat.add[k].bk===gId){delete cat.add[k];delete Q[k];setImg(k,null)}});
  delete cat.grp[gId];setImg(gId,null);save();saveCat();buildItems();$("gd").style.display="none";go("home")});
 $("mc").addEventListener("click",function(){$("md").style.display="none"});
-$("pc").addEventListener("click",function(){$("pfc").click()});
+$("pc").addEventListener("click",function(){openCam(function(u){pend=u;showPv()},"pfc")});
 $("pg").addEventListener("click",function(){$("pf").click()});
 $("pd").addEventListener("click",function(){pend=null;showPv()});
 ["pf","pfc"].forEach(function(id){$(id).addEventListener("change",function(){var f=this.files&&this.files[0];this.value="";if(!f)return;shrink(f,function(u){pend=u;showPv()})})});
@@ -412,7 +432,10 @@ applyTheme();setStatus("yükleniyor…");render();
  var j=function(n){return"https://cdn.jsdelivr.net/npm/firebase@10.12.2/firebase-"+n+"-compat.js"};
  all(g,start,function(){all(j,start,function(){setStatus("Firebase yüklenemedi — veriler bu cihazda");render()})});
 })();
-if("serviceWorker" in navigator&&/^https?:$/.test(location.protocol)){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){})})}
+if("serviceWorker" in navigator&&/^https?:$/.test(location.protocol)){
+ var hadSW=!!navigator.serviceWorker.controller;
+ navigator.serviceWorker.addEventListener("controllerchange",function(){if(hadSW&&!window.__rl){window.__rl=1;location.reload()}});
+ window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").then(function(r){r.update()}).catch(function(){})})}
 </script>
 </body>
 </html>

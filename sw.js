@@ -1,5 +1,5 @@
 // Sigara Sipariş servis çalışanı. Uygulamada değişiklik yaptığında CACHE adındaki sürümü artır (v1 -> v2).
-var CACHE = "sigara-siparis-v5";
+var CACHE = "sigara-siparis-v6";
 var SHELL = ["./", "manifest.webmanifest", "icon-192.png", "icon-512.png", "icon-maskable-512.png", "apple-touch-icon.png", "favicon-32.png"];
 
 self.addEventListener("install", function (e) {
@@ -22,7 +22,7 @@ self.addEventListener("fetch", function (e) {
   // Sayfa: önce internet (güncel hali gelsin), olmazsa kayıtlı kopya
   if (r.mode === "navigate") {
     e.respondWith(
-      fetch(r).then(function (res) {
+      fetch(r.url, { cache: "no-store" }).then(function (res) {
         var cp = res.clone();
         caches.open(CACHE).then(function (c) { c.put("./", cp); });
         return res;
