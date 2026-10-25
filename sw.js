@@ -1,5 +1,5 @@
 // Sigara Sipariş servis çalışanı. Uygulamada değişiklik yaptığında CACHE adındaki sürümü artır (v1 -> v2).
-var CACHE = "sigara-siparis-v4";
+var CACHE = "sigara-siparis-v5";
 var SHELL = ["./", "manifest.webmanifest", "icon-192.png", "icon-512.png", "icon-maskable-512.png", "apple-touch-icon.png", "favicon-32.png"];
 
 self.addEventListener("install", function (e) {
